@@ -2,10 +2,11 @@ import time
 
 from sensors import *
 from writers import *
-
+from pi_pipe import *
 
 def main():
-    with Webcam() as cam, \
+    with PiCameraSensor() as cam, \
+         PiPipe() as pipe, \
          ControllerServer(port=8000) as controller, \
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
@@ -13,6 +14,7 @@ def main():
             while True:
                 try:
                     frame = cam.read()
+                    frame = pipe.pipe(frame)
                     keys = controller.read()
                     video_server.write(frame)
                     # img_disk_writer.write(frame)
