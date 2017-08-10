@@ -4,8 +4,8 @@ import inspect
 __all__ = []
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    if name in ["motor", "motor_writer"]:
-        continue
+    #if name in ["motor", "motor_writer"]:
+    #    continue
 
     module = loader.find_module(name).load_module(name)
 
