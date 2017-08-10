@@ -5,7 +5,7 @@ from writers import *
 
 
 def main():
-    with Webcam() as cam, \
+    with PiCameraSensor() as cam, \
          ControllerServer(port=8000) as controller, \
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
