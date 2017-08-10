@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AI Car controller</title>
+    </head>
+    <body>
+        <p style="text-align: center" id="output"></p>
+        <script>
+            const KEYS = new Map([
+                [37, 'LEFT'], 
+                [38, 'UP'],
+                [39, 'RIGHT'],
+                [40, 'DOWN'],
+            ]);
+            function eqSet(as, bs) {
+                if (as.size !== bs.size) return false;
+                for (var a of as) if (!bs.has(a)) return false;
+                return true;
+            }
+            const url = `ws://${window.location.host}/socket`;
+            let ws = new WebSocket(url);
+            ws.onopen = function() {
+                document.getElementById("output").innerHTML = "CONNECTED!";
+
+                let keydown = new Set();
+                window.addEventListener("keydown", function (e) {
+                    if (KEYS.has(e.keyCode)) {
+                        keydown.add(KEYS.get(e.keyCode));
+                        send();
+                    }
+                });
+                window.addEventListener("keyup", function (e) {
+                    if (KEYS.has(e.keyCode)) {
+                        keydown.delete(KEYS.get(e.keyCode));
+                        send();
+                    }
+                });
+
+                let lastSentKeys = new Set();
+                function send() {
+                    let currentKeys = keydown;
+                    if (eqSet(lastSentKeys, currentKeys)) {
+                        ws.send(JSON.stringify(Array.from(currentKeys)));
+                        document.getElementById("output").innerHTML = Array.from(currentKeys);
+                        lastSentKeys = currentKeys;
+                    }
+                }
+            }
+
+        </script>
+    </body>
+</html>
