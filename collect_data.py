@@ -9,7 +9,7 @@ def main():
          ControllerServer(port=8000) as controller, \
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
-         MotorWriter(filename="collected_data/classes.csv") as csv_disk_writer:
+         MotorWriter() as csv_disk_writer:
             while True:
                 try:
                     frame = cam.read()
