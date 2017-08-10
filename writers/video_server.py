@@ -32,13 +32,14 @@ class VideoServer(Writer):
         app.router.add_get("/", self.video_handler)
         web.run_app(app, port=self.port, handle_signals=False)
 
-    async def video_handler(self, request):
+    @asyncio.coroutine
+    def video_handler(self, request):
         resp = web.StreamResponse(status=200, 
                                   reason='OK', 
                                   headers={'Content-Type': 'multipart/x-mixed-replace; boundary=frame'})
         
         # The StreamResponse is a FSM. Enter it with a call to prepare.
-        await resp.prepare(request)
+        yield from resp.prepare(request)
         
         while self.running:
             try:
@@ -53,10 +54,10 @@ class VideoServer(Writer):
                 resp.write(img)
                 
                 # Yield to the scheduler so other processes do stuff.
-                await resp.drain()
+                yield from resp.drain()
                  
                 # Sleep for a bit..
-                await asyncio.sleep(0.07)
+                yield from asyncio.sleep(0.07)
             except Exception as e:
                 # So you can observe on disconnects and such.
                 print(repr(e))
