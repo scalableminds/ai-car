@@ -9,14 +9,14 @@ def main():
          ControllerServer(port=8000) as controller, \
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
-         MotorWriter() as csv_disk_writer:
+         MotorWriter() as writer:
             while True:
                 try:
                     frame = cam.read()
                     keys = controller.read()
                     video_server.write(frame)
                     # img_disk_writer.write(frame)
-                    # csv_disk_writer.write(keys)
+                    writer.write(keys)
                     print(keys)
                     time.sleep(0.1)
                 except KeyboardInterrupt:
