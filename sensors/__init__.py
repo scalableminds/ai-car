@@ -4,8 +4,8 @@ import inspect
 __all__ = []
 
 for loader, name, is_pkg in pkgutil.walk_packages(__path__):
-    if name in ["pi_camera_sensor"]:
-        continue
+    #if name in ["pi_camera_sensor"]:
+    #    continue
     
     module = loader.find_module(name).load_module(name)
 
