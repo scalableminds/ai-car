@@ -15,5 +15,5 @@ class ImageDiskWriter(Writer):
         pass
 
     def write(self, data):
-        cv2.imwrite("%s/image%03d.png" % (self.folder, self.counter), data)
+        cv2.imwrite("%s/image%05d.png" % (self.folder, self.counter), data)
         self.counter += 1
