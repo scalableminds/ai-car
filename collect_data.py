@@ -15,8 +15,8 @@ def main():
                     frame = cam.read()
                     keys = controller.read()
                     video_server.write(frame)
-                    # img_disk_writer.write(frame)
-                    # csv_disk_writer.write(keys)
+                    #img_disk_writer.write(frame)
+                    #csv_disk_writer.write(keys)
                     print(keys)
                     time.sleep(0.1)
                 except KeyboardInterrupt:

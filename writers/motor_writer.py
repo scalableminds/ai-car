@@ -1,7 +1,7 @@
 from writers.motor import default_motor
 from writers.writer import Writer
 
-
+velocity = 0.6
 class MotorWriter(Writer):
     def __enter__(self):
         self.motor = default_motor()
@@ -20,12 +20,12 @@ class MotorWriter(Writer):
         elif "RIGHT" in keys:
             self.motor.turn_right()
         else:
-            self.motor.go_straight()
+            self.motor.go_straight(velocity)
 
         if "UP" in keys:
-            self.motor.forward()
+            self.motor.forward(velocity)
         elif "DOWN" in keys:
-            self.motor.backward()
+            self.motor.backward(velocity)
         else:
             self.motor.brake()
 
