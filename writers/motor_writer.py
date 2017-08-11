@@ -20,7 +20,7 @@ class MotorWriter(Writer):
         elif "RIGHT" in keys:
             self.motor.turn_right()
         else:
-            self.motor.go_straight(velocity)
+            self.motor.go_straight()
 
         if "UP" in keys:
             self.motor.forward(velocity)
