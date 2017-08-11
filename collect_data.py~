@@ -34,7 +34,7 @@ if __name__ == '__main__':
         for i in range(4):
             img = cv2.imread("test/%d.jpg" % i, cv2.IMREAD_COLOR)
             res = pipe.pipe(img)
-            print(pilot.pipe(res, 20))
+            print(pilot.pipe(res))
 
     while True:
         cv2.waitKey(100)
