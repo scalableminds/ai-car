@@ -9,6 +9,7 @@ def main():
          ControllerServer(port=8000) as controller, \
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
+         CSVDiskWriter(fiilename="collected_data/myfile.csv") as csv_disk_writer, \
          MotorWriter() as writer:
             while True:
                 try:
