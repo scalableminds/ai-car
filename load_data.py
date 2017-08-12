@@ -9,7 +9,7 @@ def load_data(filename, folder):
                     for line in file if line.strip() != ""]
 
     count = len(csv_data)
-    images = np.stack([cv2.imread("%s/image%03d.png" % (folder, i),
+    images = np.stack([cv2.imread("%s/image%05d.png" % (folder, i),
                        cv2.IMREAD_GRAYSCALE) for i in range(count)])
 
     return csv_data, images
