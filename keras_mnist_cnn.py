@@ -5,19 +5,25 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 from keras import backend as K
+from pipes import *
 
 batch_size = 128
-num_classes = 10
-epochs = 12
+num_classes = 4
+epochs = 1
 
 # input image dimensions
-img_rows, img_cols = 100, 75
+img_rows, img_cols = 75, 100
 
 # the data, shuffled and split between train and test sets
-x_train = cv2.imread (/Users/anton/ai-car/collected_data/x_train/image*.png)
-y_train =
-x_test =
-y_test = 
+X, Y = load_data("collected_data/x_train/classes.csv", "collected_data/x_train")
+
+x_train = X
+y_train = Y
+
+X, Y = load_data("collected_data/x_test/classes.csv", "collected_data/x_test")
+
+x_test = X
+y_test = Y
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], 1, img_rows, img_cols)
@@ -37,8 +43,8 @@ print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
 
 # convert class vectors to binary class matrices
-y_train = keras.utils.to_categorical(y_train, num_classes)
-y_test = keras.utils.to_categorical(y_test, num_classes)
+# y_train = keras.utils.to_categorical(y_train, num_classes)
+# y_test = keras.utils.to_categorical(y_test, num_classes)
 
 model = Sequential()
 model.add(Conv2D(32, kernel_size=(3, 3),
@@ -63,6 +69,6 @@ model.fit(x_train, y_train,
           validation_data=(x_test, y_test))
 score = model.evaluate(x_test, y_test, verbose=0)
 
-model.save(/Users/anton/ai-car/trained_model)
+model.save("/Users/anton/ai-car/trained_model")
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
