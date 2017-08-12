@@ -1,7 +1,7 @@
 import cv2
 
 from writers.writer import Writer
-from pipes import *
+
 
 class ImageDiskWriter(Writer):
     def __init__(self, folder):
@@ -15,6 +15,5 @@ class ImageDiskWriter(Writer):
         pass
 
     def write(self, data):
-        data = shrinking.pipe(data)
         cv2.imwrite("%s/image%05d.png" % (self.folder, self.counter), data)
         self.counter += 1

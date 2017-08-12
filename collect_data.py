@@ -2,7 +2,7 @@ import time
 
 from sensors import *
 from writers import *
-
+from pipes import *
 
 def main():
     with PiCameraSensor() as cam, \
@@ -10,10 +10,11 @@ def main():
          VideoServer(port=8050) as video_server, \
          ImageDiskWriter(folder="collected_data") as img_disk_writer, \
          CSVDiskWriter(filename="collected_data/myfile.csv") as csv_disk_writer, \
+         Shrinking() as shrinking, \
          MotorWriter() as writer:
             while True:
                 try:
-                    frame = cam.read()
+                    frame = shrinking.pipe(cam.read())
                     keys = controller.read()
                     video_server.write(frame)
                     img_disk_writer.write(frame)
