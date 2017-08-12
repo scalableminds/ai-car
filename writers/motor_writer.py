@@ -1,7 +1,7 @@
 from writers.motor import default_motor
 from writers.writer import Writer
 
-velocity = 0.6
+velocity = 1
 class MotorWriter(Writer):
     def __enter__(self):
         self.motor = default_motor()
