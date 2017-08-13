@@ -1,39 +1,16 @@
+from aiohttp import web, WSMsgType
+import asyncio 
 import cv2
-import asyncio
-from aiohttp import web
-from threading import Thread
 
+from handlers.handler import Handler
 from writers.writer import Writer
 
-
-class VideoServer(Writer):
-    def __init__(self, port):
-        self.port = port
+class VideoHandler(Handler, Writer):
+    def __init__(self):
         self.frame = None
-        self.running = False
-
-    def __enter__(self):
-        self.frame = None
-        self.running = True
-        Thread(target=self.run_thread).start()
-        return self
-
-    def __exit__(self, exit_type, value, traceback):
-        self.loop.stop()
-        self.running = False
-
-    def write(self, data):
-        self.frame = data
-
-    def run_thread(self):
-        self.loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(self.loop)
-        app = web.Application(loop=self.loop)
-        app.router.add_get("/", self.video_handler)
-        web.run_app(app, port=self.port, handle_signals=False)
 
     @asyncio.coroutine
-    def video_handler(self, request):
+    def handle(self, request):
         resp = web.StreamResponse(status=200, 
                                   reason='OK', 
                                   headers={'Content-Type': 'multipart/x-mixed-replace; boundary=frame'})
@@ -50,7 +27,7 @@ class VideoServer(Writer):
                 img_len = str.encode(str(len(img)))
                 resp.write(b"--frame\r\n")
                 resp.write(b"Content-Type: image/jpeg\r\n")
-                resp.write(b"Content-length: "+img_len+b"\r\n\r\n")
+                resp.write(b"Content-length: " + img_len + b"\r\n\r\n")
                 resp.write(img)
                 
                 # Yield to the scheduler so other processes do stuff.
@@ -63,3 +40,12 @@ class VideoServer(Writer):
                 print(repr(e))
                 raise
         return resp
+
+    def __enter__(self):
+        self.running = True
+
+    def __exit__(self, exit_type, value, traceback):
+        self.running = False
+
+    def write(self, data):
+        self.frame = data
