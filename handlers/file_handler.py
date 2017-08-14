@@ -9,8 +9,7 @@ class FileHandler(Handler):
 
     @asyncio.coroutine
     def handle(self, request):
-        with open(self.file, "rt") as file:
-            return web.Response(text=file.read(), content_type="text/html")
+    	return web.FileRespone(file)
 
     def __enter__(self):
         pass
