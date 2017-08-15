@@ -6,6 +6,7 @@ from writers import *
 
 def main(write_to_disk, enable_video, use_nn, init_phase_duration, main_framerate, sleep_time):
     init_phase = init_phase_duration
+    vid_w = VideoServer(port=8050) if enable_video else EmptyWriter()
 
     with PiCameraSensor(internal_framerate=main_framerate) as cam, \
          (NNSensor() if use_nn else ControllerServer(port=8000)) as controller, \
@@ -53,8 +54,6 @@ if __name__ == '__main__':
     enable_video = input() == 'y'
     print("NN or manual control (n/m)?")
     use_nn = input() =='n'
-
-    vid_w = VideoServer(port=8050) if enable_video else EmptyWriter()
 
     init_phase_duration = 3 # in sek
     main_framerate = 5

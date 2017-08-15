@@ -14,13 +14,8 @@ def load_data(filename, folder):
     X, Y = ([], [])
     #X = np.stack([cv2.imread(folder + f, cv2.IMREAD_GRAYSCALE) for f in os.listdir(folder)])
     #Y = np.stack([keys2bitmap(line) for line in csv_data])
-    k = 0 
+    
     for f in os.listdir(folder):
-        k+=1
-        if k==5:
-            k=0
-        else:
-            continue
         ind = int(f[5:10]) # the index
         if len(csv_data[ind])==0 or "DOWN" in csv_data[ind]:
             continue
@@ -45,7 +40,7 @@ def load_data(filename, folder):
             flipped_bitmap[0] = 1
 
         Y.append(flipped_bitmap)
-         
+        
     return np.array(X), np.array(Y)
 
 if __name__ == '__main__':
