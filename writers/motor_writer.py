@@ -23,9 +23,9 @@ class MotorWriter(Writer):
             self.motor.go_straight()
 
         if "UP" in keys:
-            self.motor.forward(speed=1)
+            self.motor.forward(speed=0.8)
         elif "DOWN" in keys:
-            self.motor.backward(speed=1)
+            self.motor.backward(speed=0.8)
         else:
             self.motor.brake()
 

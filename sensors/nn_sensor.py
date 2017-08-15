@@ -12,7 +12,7 @@ class NNSensor(Sensor):
     def __init__(self):
         print("loading model")
         t = time()
-        self.model = keras.models.load_model('/mnt/model.h5')
+        self.model = keras.models.load_model('./model.h5')
         print("time was: "+str(time()-t))
         print("model loaded")
 
