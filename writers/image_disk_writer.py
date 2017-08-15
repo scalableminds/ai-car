@@ -5,6 +5,7 @@ from writers.writer import Writer
 
 class ImageDiskWriter(Writer):
     def __init__(self, folder):
+        print("Init writing to disk: {}".format(folder))
         self.folder = folder
         self.counter = 0
 

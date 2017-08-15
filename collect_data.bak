@@ -1,0 +1,30 @@
+import time
+
+from sensors import *
+from writers import *
+
+
+def main():
+    with PiCameraSensor() as cam, \
+         ControllerServer(port=8000) as controller, \
+         VideoServer(port=8050) as video_server, \
+         MotorWriter() as motor_writer, \
+         ImageDiskWriter(folder="collected_data") as img_disk_writer, \
+         CSVDiskWriter(filename="collected_data/classes.csv") as csv_disk_writer:
+            cam.resolution=(100, 100)
+            while True:
+                try:
+                    frame = cam.read()
+                    frame = cv2.resize(frame, (100,100))
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                    keys = controller.read()
+                    video_server.write(frame)
+                    img_disk_writer.write(frame)
+                    csv_disk_writer.write(keys)
+                    motor_writer.write(keys)
+                    time.sleep(0.1)
+                except KeyboardInterrupt:
+                    break
+
+if __name__ == '__main__':
+    main()
