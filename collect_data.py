@@ -9,21 +9,23 @@ def main():
     vid_handler = VideoHandler()
     key_handler = KeyHandler()
     file_handler = FileHandler("index.html")
-    with Webcam() as cam, \
+    with PiCameraSensor() as cam, \
         Server(handlers={
             "/": file_handler,
             "/video": vid_handler,
             "/socket": key_handler 
         }, port=8080) as server, \
         ImageDiskWriter(folder="collected_data") as img_disk_writer, \
+        MotorWriter() as motor_writer, \
         CSVDiskWriter(filename="collected_data/classes.csv") as csv_disk_writer:
             while True:
                 try:
                     frame = cam.read()
-                    keys = key_handler.read()                    
-                    # img_disk_writer.write(frame)
-                    # csv_disk_writer.write(keys)
-                    #print(keys)
+                    keys = key_handler.read()     
+                    motor_writer.write(keys)               
+                    img_disk_writer.write(frame)
+                    csv_disk_writer.write(keys)
+                    print(keys)
                     vid_handler.write(frame)
                     time.sleep(0.1)
                 except KeyboardInterrupt:
