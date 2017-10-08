@@ -14,7 +14,7 @@ class KerasPipe(Pipe):
         if frame is None:
             return set()
 
-        reshaped = frame.reshape((1,) + frame.shape + (1,))
+        reshaped = frame.reshape((1, 1) + frame.shape)
         results = self.model.predict(reshaped)
 
         keys = set()
