@@ -1,10 +1,11 @@
 from pipes.pipe import Pipe
-import keras
+# import keras
 from load_data import KEYS
 
 class KerasPipe(Pipe):
 
     def __init__(self, filename, threshold=0.5, verbose=False):
+        import keras
         self.model = keras.models.load_model(filename)
         self.threshold = threshold
         self.verbose = False
