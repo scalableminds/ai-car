@@ -16,7 +16,7 @@ class PiCameraSensor(Sensor):
     def _read_camera(self):
         current_frame = np.zeros_like(self._last_frame)
         camera = PiCamera(resolution=self.resolution, framerate=self.internal_framerate)
-        for _ in camera.capture_continuous(current_frame, format='rgb'):
+        for _ in camera.capture_continuous(current_frame, format='rgb', use_video_port=True):
             self._last_frame = current_frame.copy()
             if self.exited:
                 break
