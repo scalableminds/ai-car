@@ -3,8 +3,10 @@ from writers.writer import Writer
 
 
 class MotorWriter(Writer):
-    def __enter__(self):
+    def __enter__(self, frequency=100, speed=1):
         self.motor = default_motor()
+        self.motor.drivetrain_device.enable_device.frequency = frequency
+        self.speed = speed
         return self
 
     def __exit__(self, exit_type, value, traceback):
@@ -23,9 +25,9 @@ class MotorWriter(Writer):
             self.motor.go_straight()
 
         if "UP" in keys:
-            self.motor.forward()
+            self.motor.forward(speed=self.speed)
         elif "DOWN" in keys:
-            self.motor.backward()
+            self.motor.backward(speed=self.speed)
         else:
             self.motor.brake()
 
