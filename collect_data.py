@@ -24,7 +24,7 @@ def main():
             "/socket": key_handler 
         }, port=8080) as server, \
         ImageDiskWriter(folder=log_folder) as img_disk_writer, \
-        MotorWriter() as motor_writer, \
+        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe, \
         CSVDiskWriter(filename="%s/classes.csv" % log_folder) as csv_disk_writer:
             while True:

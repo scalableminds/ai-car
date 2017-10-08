@@ -20,12 +20,8 @@ def main():
             "/video": vid_handler,
             "/socket": key_handler
         }, port=8080) as server, \
-        MotorWriterPWM() as motor_writer, \
+        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe:
-            drive_pwm_count = 5
-            drive_pwm_high = 3
-            drive_pwm = 0
-            motor_writer.motor.drivetrain_device.enable_device.frequency = 3
             while True:
                 try:
                     frame = cam.read()
@@ -38,9 +34,6 @@ def main():
                     right = np.count_nonzero(frame[6:, 32:])
                     direction = (right - left) / 1536.0
                     keys = set() # keys = key_handler.read()
-                    #if drive_pwm < drive_pwm_high:
-                    #  keys.add('UP')
-                    #drive_pwm = (drive_pwm + 1) % drive_pwm_count
                     keys.add('UP')
 
                     if abs(direction) > 0.15:

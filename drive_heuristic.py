@@ -20,11 +20,8 @@ def main():
             "/video": vid_handler,
             "/socket": key_handler
         }, port=8080) as server, \
-        MotorWriter() as motor_writer, \
+        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe:
-            drive_pwm_count = 4
-            drive_pwm_high = 2
-            drive_pwm = 0
             while True:
                 try:
                     frame = cam.read()
@@ -35,10 +32,6 @@ def main():
                     direction = (right - left) / 1536.0
 
                     keys = set() # keys = key_handler.read()
-                    if drive_pwm < drive_pwm_high:
-                      keys.add('UP')
-                    drive_pwm = (drive_pwm + 1) % drive_pwm_count
-
                     if abs(direction) > 0.15:
                       if direction < 0:
                         keys.add('RIGHT')
