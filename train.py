@@ -39,7 +39,7 @@ img_rows, img_cols = 48, 64
 import keras
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
-from keras.layers import Conv2D, MaxPooling2D
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization
 from keras import backend as K
 
 print('Imported modules')
@@ -65,19 +65,24 @@ print('y_test shape:', y_test.shape)
 
 #MODEL 
 model = Sequential()
-model.add(Conv2D(12, kernel_size=(5, 5),
-                 activation='relu',
+model.add(Conv2D(12, (5, 5), activation='relu',
                  input_shape=input_shape))
+#model.add(BatchNormalization(axis=1))
 model.add(Conv2D(16, (5, 5), activation='relu'))
-#model.add(Conv2D(48, (3, 3), activation='relu'))
+#model.add(BatchNormalization(axis=1))
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Conv2D(12, (5, 5), activation='relu'))
+#model.add(BatchNormalization(axis=1))
+model.add(Conv2D(16, (5, 5), activation='relu'))
+#model.add(BatchNormalization(axis=1))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 #model.add(Dense(256, activation='sigmoid'))
 model.add(Dropout(0.5))
 model.add(Dense(64, activation='relu'))
-model.add(Dense(32, activation='relu'))
+#model.add(Dense(32, activation='relu'))
 model.add(Dense(16, activation='relu'))
-model.add(Dropout(0.3))
+model.add(Dropout(0.5))
 model.add(Dense(num_classes, activation='sigmoid'))
 
 print('Compiling model')
@@ -86,10 +91,13 @@ model.compile(loss=keras.losses.binary_crossentropy,
               optimizer='adam',
               metrics=['accuracy'])
 
+model.summary()
+
 print('Done compiling, starting training')
 model.fit(x_train, y_train,
           batch_size=batch_size,
           epochs=epochs,
+          validation_data=(x_test, y_test),
           shuffle=True,
           verbose=1)
 score = model.evaluate(x_test, y_test, verbose=1)
