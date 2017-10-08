@@ -1,6 +1,9 @@
 from pipes.pipe import Pipe
 # import keras
 from load_data import KEYS
+import numpy as np
+
+STRAIGHT_ONLY = True
 
 class KerasPipe(Pipe):
 
@@ -18,9 +21,19 @@ class KerasPipe(Pipe):
         results = self.model.predict(reshaped)
 
         keys = set()
-        for i in range(len(KEYS)):
-            if results[0][i] > self.threshold:
-                keys.add(KEYS[i])
+        if STRAIGHT_ONLY:
+            clazz = np.argmax(results[0])
+            keys.add("UP")
+            if clazz == 0:
+                keys.add("LEFT")
+            if clazz == 1:
+                keys.add("RIGHT")
+        else:
+            for i in range(len(KEYS)):
+                if results[0][i] > self.threshold:
+                    keys.add(KEYS[i])
+
+        print(keys)
 
         if self.verbose:
             print("in shape: {}".format(reshaped.shape))
