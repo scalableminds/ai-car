@@ -3,7 +3,6 @@ import os, os.path
 import numpy as np
 import cv2
 import load_data
-import json
 
 STEER_ONLY = True
 
@@ -12,19 +11,15 @@ batch_size = 128
 num_classes = 3 if STEER_ONLY else 4
 epochs = 7
 
-train_dir = './data/train/'
-test_dir = './data/test/'
+train_dir = './data/train'
+test_dir = './data/test'
 outfile_name = './model.h5'
 
 def load_dataset(directory):
-
     x_train, y_train = load_data.load_data(directory + "/classes.csv", directory)
-
-    with open(directory + "/range.json") as f:
-        range_json = json.load(f)
-
-    return (x_train[range_json["start"]:range_json["end"]],
-            y_train[range_json["start"]:range_json["end"]])
+    up_index = load_data.KEYS.index("UP")
+    selected_rows = y_train[:, up_index] == 1
+    return (x_train[selected_rows], y_train[selected_rows])
 
 
 def load_data_from_files():
@@ -49,13 +44,13 @@ def convert_ys(old_y):
 def print_y_stats(y, name):
     print("Stats for", name, ":")
     print("  Length:", len(y))
-    print("  Left:", np.count_nonzero(y[:, 0]))
-    print("  Right:", np.count_nonzero(y[:, 1]))
+    print("  Left:", np.count_nonzero(y[:, load_data.KEYS.index('LEFT')]))
+    print("  Right:", np.count_nonzero(y[:, load_data.KEYS.index('RIGHT')]))
     if STEER_ONLY:
-        print("  Straight:", np.count_nonzero(y[:, 2]))
+        print("  Straight:", np.count_nonzero(y[:, load_data.KEYS.index('UP')]))
     else:
-        print("  Up:", np.count_nonzero(y[:, 2]))
-        print("  Down:", np.count_nonzero(y[:, 3]))
+        print("  Up:", np.count_nonzero(y[:, load_data.KEYS.index('UP')]))
+        print("  Down:", np.count_nonzero(y[:, load_data.KEYS.index('DOWN')]))
     print()
 
 if STEER_ONLY:
