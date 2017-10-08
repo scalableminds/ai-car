@@ -12,7 +12,7 @@ def main():
     vid_handler = VideoHandler()
     key_handler = KeyHandler()
     file_handler = FileHandler("index.html")
-    timestamp_str = str(datetime.now()).replace(" ", "_")
+    timestamp_str = str(datetime.now()).replace(" ", "_").replace(":", "_").replace(".", "_")
     log_folder = "collected_data_" + timestamp_str
 
     os.mkdir(log_folder)
