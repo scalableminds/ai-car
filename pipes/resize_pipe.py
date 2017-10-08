@@ -8,7 +8,7 @@ class ResizePipe(Pipe):
         self.grayscale = grayscale
 
     def pipe(self, frame):
-        if grayscale:
+        if self.grayscale:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         frame = cv2.resize(frame, self.size)
         return frame
