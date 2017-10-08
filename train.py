@@ -3,6 +3,7 @@ import os, os.path
 import numpy as np
 import cv2
 import load_data
+import json
 
 # pylint: disable=C0103
 batch_size = 128
@@ -11,17 +12,24 @@ epochs = 7
 
 train_dir = './data/train/'
 test_dir = './data/test/'
-train_classes_name = './data/train/classes.csv'
-test_classes_name = './testdata/classes.csv'
 outfile_name = './model.h5'
 
+def load_dataset(directory):
+
+    x_train, y_train = load_data.load_data(directory + "/classes.csv", directory)
+
+    with open(directory + "/range.json") as f:
+        range_json = json.load(f)
+
+    return (x_train[range_json["start"]:range_json["end"]],
+            y_train[range_json["start"]:range_json["end"]])
+
+
 def load_data_from_files():
-   x_train, y_train = load_data.load_data(train_classes_name, train_dir)
-   x_test, y_test = load_data.load_data(test_classes_name, test_dir)
-   return (x_train, y_train), (x_test, y_test)
+    return load_dataset(train_dir), load_dataset(test_dir)
 
 # input image dimensions
-img_rows, img_cols = 50, 100
+img_rows, img_cols = 48, 64
 
 # the data, shuffled and split between train and test sets
 (x_train, y_train), (x_test, y_test) = load_data_from_files()
