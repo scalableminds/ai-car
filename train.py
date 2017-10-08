@@ -5,9 +5,11 @@ import cv2
 import load_data
 import json
 
+STEER_ONLY = True
+
 # pylint: disable=C0103
 batch_size = 128
-num_classes = 4
+num_classes = 3 if STEER_ONLY else 4
 epochs = 7
 
 train_dir = './data/train/'
@@ -34,6 +36,34 @@ img_rows, img_cols = 48, 64
 # the data, shuffled and split between train and test sets
 (x_train, y_train), (x_test, y_test) = load_data_from_files()
 
+def convert_ys(old_y):
+
+    # return np.column_stack((np.ones(len(old_y)), np.zeros(len(old_y)), np.zeros(len(old_y))))
+
+    is_left = old_y[:, 0]
+    is_right = np.logical_and(np.logical_not(is_left), old_y[:, 1])
+    is_straight = np.logical_and(np.logical_not(is_left),
+                                 np.logical_not(is_right))
+    return np.column_stack((is_left, is_right, is_straight))
+
+def print_y_stats(y, name):
+    print("Stats for", name, ":")
+    print("  Length:", len(y))
+    print("  Left:", np.count_nonzero(y[:, 0]))
+    print("  Right:", np.count_nonzero(y[:, 1]))
+    if STEER_ONLY:
+        print("  Straight:", np.count_nonzero(y[:, 2]))
+    else:
+        print("  Up:", np.count_nonzero(y[:, 2]))
+        print("  Down:", np.count_nonzero(y[:, 3]))
+    print()
+
+if STEER_ONLY:
+    y_train = convert_ys(y_train)
+    y_test = convert_ys(y_test)
+
+print_y_stats(y_train, "train")
+print_y_stats(y_test, "test")
 
 # this takes way too long
 import keras
@@ -78,16 +108,18 @@ model.add(Conv2D(16, (5, 5), activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Flatten())
 #model.add(Dense(256, activation='sigmoid'))
-model.add(Dropout(0.5))
+# model.add(Dropout(0.5))
 model.add(Dense(64, activation='relu'))
 #model.add(Dense(32, activation='relu'))
 model.add(Dense(16, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(num_classes, activation='sigmoid'))
+# model.add(Dropout(0.5))
+last_activation = 'softmax' if STEER_ONLY else 'sigmoid'
+model.add(Dense(num_classes, activation=last_activation))
 
 print('Compiling model')
 
-model.compile(loss=keras.losses.binary_crossentropy,
+loss = keras.losses.categorical_crossentropy if STEER_ONLY else keras.losses.binary_crossentropy
+model.compile(loss=loss,
               optimizer='adam',
               metrics=['accuracy'])
 
