@@ -5,21 +5,28 @@ from server import Server
 from sensors import *
 from writers import *
 from pipes.resize_pipe import ResizePipe
+from datetime import datetime
+import os
 
 def main():
     vid_handler = VideoHandler()
     key_handler = KeyHandler()
     file_handler = FileHandler("index.html")
+    timestamp_str = str(datetime.now())
+    log_folder = "collected_data_" + timestamp_str
+
+    os.mkdir(log_folder)
+
     with PiCameraSensor(resolution=(64, 48)) as cam, \
         Server(handlers={
             "/": file_handler,
             "/video": vid_handler,
             "/socket": key_handler 
         }, port=8080) as server, \
-        ImageDiskWriter(folder="collected_data") as img_disk_writer, \
+        ImageDiskWriter(folder=log_folder) as img_disk_writer, \
         MotorWriter() as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe, \
-        CSVDiskWriter(filename="collected_data/classes.csv") as csv_disk_writer:
+        CSVDiskWriter(filename="%s/classes.csv" % log_folder) as csv_disk_writer:
             while True:
                 try:
                     frame = cam.read()
