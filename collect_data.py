@@ -18,7 +18,7 @@ def main():
         }, port=8080) as server, \
         ImageDiskWriter(folder="collected_data") as img_disk_writer, \
         MotorWriter() as motor_writer, \
-        ResizePipe(size=(64, 48), grayscale=Trte) as resize_pipe, \
+        ResizePipe(size=(64, 48), grayscale=True) as resize_pipe, \
         CSVDiskWriter(filename="collected_data/classes.csv") as csv_disk_writer:
             while True:
                 try:
