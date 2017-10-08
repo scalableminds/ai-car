@@ -3,10 +3,13 @@ from writers.writer import Writer
 
 
 class MotorWriter(Writer):
-    def __enter__(self, frequency=100, speed=1):
-        self.motor = default_motor()
-        self.motor.drivetrain_device.enable_device.frequency = frequency
+    def __init__(self, frequency=100, speed=1):
+        self.frequency = frequency
         self.speed = speed
+
+    def __enter__(self):
+        self.motor = default_motor()
+        self.motor.drivetrain_device.enable_device.frequency = self.frequency
         return self
 
     def __exit__(self, exit_type, value, traceback):
