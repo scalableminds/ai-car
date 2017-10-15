@@ -1,99 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/notify/0.4.2/notify.min.js"></script>
+  <title>AI-Car</title>
+  <style>
+    html,
+    body {
+      height: 100vh;
+      width: 100vw;
+      padding: 0px;
+      margin: 0px;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
 
-<style>
+    * {
+      box-sizing: border-box;
+    }
 
-html, body {
-	height: 100vh;
-	width: 100vw;
-	padding: 0px;
-	margin: 0px;
-	overflow: hidden;
-}
+    #controller {
+      position: absolute;
+      height: 5vh;
+      width: 80vw;
+      bottom: 0px;
+      left: 10vw;
+      border: 2px solid black;
+      background: rgba(255, 255, 255, 0.5);
+      display: table;
+    }
 
-#controller {
-	position: absolute;
-	height: 5vh;
-	width: 80vw;
-	bottom: 0px;
-	left: 10vw;
-	border: 2px solid black;
-	background: rgba(255,255,255,.5);
-	display:table;
-}
+    #controllerpane {
+      display: table-cell;
+      text-align: center;
+      vertical-align: middle;
+    }
 
-#controllerpane {
-	display:table-cell; 
-	text-align:center; 
-	vertical-align:middle;
-	font-family: sans-serif;
-}
+    #bg {
+      background: url("/video");
+      background-size: contain;
+      height: 100vh;
+      width: 100vw;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
 
-#bg {
-	background: url("/video");
-	background-size: contain;
-	height: 100vh;
-	background-position: center;
-	background-repeat: no-repeat;
-	width: 100vw;
-}
-
-</style>
-
-<script type="text/javascript">
-	const KEYS = new Map([
-                [37, 'LEFT'], 
-                [38, 'UP'],
-                [39, 'RIGHT'],
-                [40, 'DOWN'],
-            ]);
-            function eqSet(as, bs) {
-                if (as.size !== bs.size) return false;
-                for (var a of as) if (!bs.has(a)) return false;
-                return true;
-            }
-            const url = `ws://${window.location.host}/socket`;
-            let ws = new WebSocket(url);
-            ws.onopen = function() {
-            	$.notify("Connected!", {className: "success"})
-                let keydown = new Set();
-                window.addEventListener("keydown", function (e) {
-                    if (KEYS.has(e.keyCode)) {
-                        keydown.add(KEYS.get(e.keyCode));
-                        send();
-                    }
-
-                });
-                window.addEventListener("keyup", function (e) {
-                    if (KEYS.has(e.keyCode)) {
-                        keydown.delete(KEYS.get(e.keyCode));
-                        send();
-                    }
-                });
-
-                let lastSentKeys = new Set();
-                function send() {
-                    let currentKeys = keydown;
-                    if (eqSet(lastSentKeys, currentKeys)) {
-                        ws.send(JSON.stringify(Array.from(currentKeys)));
-                        document.getElementById("controllerpane").innerHTML = Array.from(currentKeys);
-                        lastSentKeys = currentKeys;
-                    }
-                }
-            }
-</script>
-<title>Videostream</title>
+    #notify {
+      position: absolute;
+      top: 5vh;
+      right: 40vw;
+      left: 40vw;
+      height: 5vh;
+      border: 2px solid black;
+      background: rgba(255, 255, 255, 0.5);
+      display: none;
+      opacity: 0;
+      transition: all 0.3s;
+      line-height: 5vh;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-<div id="bg"/>
-<div id="controller">
-<div id="controllerpane">
+  <div id="notify"></div>
+  <div id="bg">
+    <div id="controller">
+      <div id="controllerpane"></div>
+    </div>
+  </div>
 
-</div>
-</div>
+  <script type="text/javascript">
+    function notify(text, delay = 3000) {
+      const el = document.getElementById("notify");
+      el.innerHTML = text;
+      el.style.opacity = 0;
+      el.style.display = "block";
+      setTimeout(() => {
+        el.style.opacity = 1;
+      }, 1);
+      setTimeout(() => {
+        el.style.opacity = 0;
+      }, delay);
+      setTimeout(() => {
+        el.style.display = "none";
+      }, delay + 300);
+    }
+
+    const KEYS = new Map([[37, "LEFT"], [38, "UP"], [39, "RIGHT"], [40, "DOWN"]]);
+
+    function eqSet(as, bs) {
+      if (as.size !== bs.size) return false;
+      for (var a of as) if (!bs.has(a)) return false;
+      return true;
+    }
+
+    const url = `ws://${window.location.host}/socket`;
+    const ws = new WebSocket(url);
+    ws.onopen = function() {
+      notify("Connected!");
+      let keydown = new Set();
+      window.addEventListener("keydown", function(e) {
+        if (KEYS.has(e.keyCode)) {
+          keydown.add(KEYS.get(e.keyCode));
+          send();
+        }
+      });
+      window.addEventListener("keyup", function(e) {
+        if (KEYS.has(e.keyCode)) {
+          keydown.delete(KEYS.get(e.keyCode));
+          send();
+        }
+      });
+
+      let lastSentKeys = new Set();
+      function send() {
+        let currentKeys = keydown;
+        if (eqSet(lastSentKeys, currentKeys)) {
+          ws.send(JSON.stringify(Array.from(currentKeys)));
+          document.getElementById("controllerpane").innerHTML = Array.from(
+            currentKeys
+          );
+          lastSentKeys = currentKeys;
+        }
+      }
+    };
+  </script>
 </body>
-
 </html>

@@ -13,7 +13,7 @@ def main():
     key_handler = KeyHandler()
     file_handler = FileHandler("index.html")
     timestamp_str = str(datetime.now()).replace(" ", "_").replace(":", "_").replace(".", "_")
-    log_folder = "collected_data_" + timestamp_str
+    log_folder = "collected_data/%s" % timestamp_str
 
     os.mkdir(log_folder)
 
@@ -24,7 +24,7 @@ def main():
             "/socket": key_handler 
         }, port=8080) as server, \
         ImageDiskWriter(folder=log_folder) as img_disk_writer, \
-        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
+        MotorWriter(frequency=3, speed=1) as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe, \
         CSVDiskWriter(filename="%s/classes.csv" % log_folder) as csv_disk_writer:
             while True:
