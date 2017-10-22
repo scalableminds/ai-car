@@ -22,7 +22,7 @@ class KeyHandler(Handler, Sensor):
 
             while self.running:
                 try:
-                    msg = yield from self.ws.receive(timeout=1)
+                    msg = yield from self.ws.receive(timeout=0.5)
                     if msg is not None:
                         if msg.type == WSMsgType.TEXT:
                             self.current_keys = set(json.loads(msg.data))
@@ -32,6 +32,10 @@ class KeyHandler(Handler, Sensor):
                             print("ws connection closed with exception %s" %
                                   self.ws.exception())
                             break
+                    else:
+                        # Treat websocket as heartbeat:
+                        # Stop the car when connection is lost
+                        self.current_keys = set(['BRAKE'])
                 except Exception as e:
                     pass
             return self.ws

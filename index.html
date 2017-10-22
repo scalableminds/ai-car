@@ -68,58 +68,53 @@
   </div>
 
   <script type="text/javascript">
-    function notify(text, delay = 3000) {
+    function sleep(timeout) {
+      return new Promise(resolve => {
+        setTimeout(resolve, timeout);
+      });
+    }
+
+    async function notify(text, delay = 3000) {
       const el = document.getElementById("notify");
       el.innerHTML = text;
       el.style.opacity = 0;
       el.style.display = "block";
-      setTimeout(() => {
-        el.style.opacity = 1;
-      }, 1);
-      setTimeout(() => {
-        el.style.opacity = 0;
-      }, delay);
-      setTimeout(() => {
-        el.style.display = "none";
-      }, delay + 300);
+      await sleep(1);
+      el.style.opacity = 1;
+      await sleep(delay);
+      el.style.opacity = 0;
+      await sleep(300);
+      el.style.display = "none";
     }
 
-    const KEYS = new Map([[37, "LEFT"], [38, "UP"], [39, "RIGHT"], [40, "DOWN"]]);
-
-    function eqSet(as, bs) {
-      if (as.size !== bs.size) return false;
-      for (var a of as) if (!bs.has(a)) return false;
-      return true;
-    }
-
+    const KEYS = new Map([[37, "LEFT"], [38, "UP"], [39, "RIGHT"], [40, "DOWN"], [32, "BRAKE"]]);
     const url = `ws://${window.location.host}/socket`;
     const ws = new WebSocket(url);
-    ws.onopen = function() {
+    let isOpen = false;
+    
+    ws.onclose = () => { isOpen = false; };
+    ws.onerror = () => { 
+      isOpen = false;
+      notify("Failed to connect.");
+    };
+    ws.onopen = async () => {
       notify("Connected!");
       let keydown = new Set();
-      window.addEventListener("keydown", function(e) {
+      window.addEventListener("keydown", e => {
         if (KEYS.has(e.keyCode)) {
           keydown.add(KEYS.get(e.keyCode));
-          send();
         }
       });
-      window.addEventListener("keyup", function(e) {
+      window.addEventListener("keyup", e => {
         if (KEYS.has(e.keyCode)) {
           keydown.delete(KEYS.get(e.keyCode));
-          send();
         }
       });
 
-      let lastSentKeys = new Set();
-      function send() {
-        let currentKeys = keydown;
-        if (eqSet(lastSentKeys, currentKeys)) {
-          ws.send(JSON.stringify(Array.from(currentKeys)));
-          document.getElementById("controllerpane").innerHTML = Array.from(
-            currentKeys
-          );
-          lastSentKeys = currentKeys;
-        }
+      while (isOpen) {
+        ws.send(JSON.stringify(Array.from(currentKeys)));
+        document.getElementById("controllerpane").innerHTML = Array.from(currentKeys);
+        await sleep(50);
       }
     };
   </script>

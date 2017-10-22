@@ -20,6 +20,7 @@ class MotorWriter(Writer):
         if data is None:
             return
         keys = data
+
         if "LEFT" in keys:
             self.motor.turn_left()
         elif "RIGHT" in keys:
@@ -27,13 +28,12 @@ class MotorWriter(Writer):
         else:
             self.motor.go_straight()
 
-        if "UP" in keys:
+        if "BRAKE" in keys:
+            self.motor.brake()
+        elif "UP" in keys:
             self.motor.forward(speed=self.speed)
         elif "DOWN" in keys:
             self.motor.backward(speed=self.speed)
         else:
-            self.motor.brake()
-
-        if len(keys) == 0:
             self.motor.stop()
 
