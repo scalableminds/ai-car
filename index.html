@@ -98,6 +98,7 @@
       notify("Failed to connect.");
     };
     ws.onopen = async () => {
+      isOpen = true;
       notify("Connected!");
       let keydown = new Set();
       window.addEventListener("keydown", e => {
@@ -112,8 +113,8 @@
       });
 
       while (isOpen) {
-        ws.send(JSON.stringify(Array.from(currentKeys)));
-        document.getElementById("controllerpane").innerHTML = Array.from(currentKeys);
+        ws.send(JSON.stringify(Array.from(keydown)));
+        document.getElementById("controllerpane").innerHTML = Array.from(keydown);
         await sleep(50);
       }
     };
