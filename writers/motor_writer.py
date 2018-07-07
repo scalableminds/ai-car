@@ -37,3 +37,18 @@ class MotorWriter(Writer):
         else:
             self.motor.stop()
 
+    def write_num(self, x, y):
+        if x > 0:
+            self.motor.turn_left(x)
+        elif x < 0:
+            self.motor.turn_right(-x)
+        else:
+            self.motor.go_straight()
+
+        if y > 0:
+            self.motor.forward(speed=self.speed/y)
+        elif y < 0:
+            self.motor.backward(speed=-self.speed/y)
+        else:
+            self.motor.stop()
+

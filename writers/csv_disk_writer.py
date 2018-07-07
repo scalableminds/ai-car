@@ -16,3 +16,8 @@ class CSVDiskWriter(Writer):
     def write(self, data):
         self.file.write("%s\n" % ",".join(data))
         self.file.flush()
+
+    def write_num(self, data):
+        self.file.write("%f,%f\n" % data)
+        self.file.flush()
+

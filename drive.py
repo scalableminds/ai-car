@@ -1,8 +1,9 @@
 import time
 
-from sensors import *
-from writers import *
-from pipes import *
+from sensors.pi_camera_sensor import PiCameraSensor
+from writers.motor_writer import MotorWriter
+from pipes.keras_pipe import KerasPipe
+from pipes.resize_pipe import ResizePipe
 
 def main():
     with PiCameraSensor() as cam, \
