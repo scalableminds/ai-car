@@ -14,16 +14,16 @@ servo = AngularServo(2, min_angle=-60, max_angle=60, min_pulse_width=minPW, max_
 servo.mid()
 
 for i in range(3):
-  sleep(1)
+  sleep(2)
   servo.min()
   print('LEFT')
-  sleep(1)
+  sleep(2)
   servo.mid()
   print('MID')
-  sleep(1)
+  sleep(2)
   servo.max()
   print('RIGHT')
-  sleep(1)
+  sleep(2)
   servo.mid()
   print('MID')
 
