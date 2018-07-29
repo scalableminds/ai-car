@@ -1,6 +1,7 @@
 from gpiozero import CompositeDevice, DigitalOutputDevice, PWMOutputDevice, AngularServo
 from gpiozero.exc import GPIOPinMissing
 from gpiozero.mixins import SourceMixin
+from os import path
 import time
 
 
@@ -38,6 +39,48 @@ class TwoWayMotor(SourceMixin, CompositeDevice):
         self.enable_device.off()
 
 
+class SmartServo(AngularServo):
+    WAIT_THRESHOLD = 2.0
+
+    def __init__(self, pin):
+        calibration = self.find_calibration()
+        print(calibration)
+        super().__init__(
+            pin,
+            min_angle=-60,
+            max_angle=60,
+            min_pulse_width=(calibration[0] - calibration[1]) / 1000,
+            max_pulse_width=(calibration[0] + calibration[1]) / 1000
+        )
+        self.lastChange = (time.time(), 0)
+
+    def find_calibration(self):
+        search_paths = [
+            ".motor_calibration.txt",
+            path.join(path.expanduser("~"), ".motor_calibration.txt")
+        ]
+
+        for _path in search_paths:
+            if path.exists(_path):
+                _mid, _range = [float(line) for line in open(_path, "r")]
+                return (_mid, _range)
+        return (1.5, 0.5)
+
+    @property
+    def angle(self):
+        return super().angle if super().angle is not None else self.lastChange[1]
+
+    @angle.setter
+    def angle(self, value):
+        if self.lastChange[1] == value and self.lastChange[0] < time.time() - SmartServo.WAIT_THRESHOLD:
+            AngularServo.angle.fset(self, None)
+            print("Skip servo movement", value)
+        else:
+            AngularServo.angle.fset(self, value)
+            if self.lastChange[1] != value:
+                self.lastChange = (time.time(), value)
+
+
 class FourWayMotor(SourceMixin, CompositeDevice):
     def __init__(self, forward=None, backward=None, drivetrain=None, steering=None):
         if not all(p is not None for p in [forward, backward, drivetrain, steering]):
@@ -46,7 +89,7 @@ class FourWayMotor(SourceMixin, CompositeDevice):
             )
         super(FourWayMotor, self).__init__(
                 drivetrain_device=TwoWayMotor(forward, backward, drivetrain),
-                steering_device=AngularServo(steering, min_angle=-60, max_angle=60, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000),
+                steering_device=SmartServo(steering),
                 _order=('drivetrain_device', 'steering_device'))
 
     def forward(self, speed=1):
@@ -62,7 +105,6 @@ class FourWayMotor(SourceMixin, CompositeDevice):
         self.drivetrain_device.stop()
 
     def turn_left(self, speed=1):
-        print(speed * self.steering_device.min_angle)
         self.steering_device.angle = 0.99 * speed * self.steering_device.min_angle
 
     def turn_right(self, speed=1):

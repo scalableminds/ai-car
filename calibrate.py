@@ -11,19 +11,19 @@ minPW = (args.mid - args.range) / 1000
 maxPW = (args.mid + args.range) / 1000
 
 servo = AngularServo(2, min_angle=-60, max_angle=60, min_pulse_width=minPW, max_pulse_width=maxPW)
-servo.mid()
+servo.angle = 0
 
 for i in range(3):
   sleep(1)
-  servo.min()
+  servo.angle = -60
   print('LEFT')
   sleep(1)
-  servo.mid()
+  servo.angle = 0
   print('MID')
   sleep(1)
-  servo.max()
+  servo.angle = 60
   print('RIGHT')
   sleep(1)
-  servo.mid()
+  servo.angle = 0
   print('MID')
 
