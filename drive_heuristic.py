@@ -1,10 +1,9 @@
 import time
 import cv2
 
-from handlers import *
 from server import Server
-from sensors import *
-from writers import *
+from sensors.pi_camera_sensor import PiCameraSensor
+from writers.motor_writer import MotorWriter
 from pipes.resize_pipe import ResizePipe
 from datetime import datetime
 import os
@@ -20,7 +19,7 @@ def main():
             "/video": vid_handler,
             "/socket": key_handler
         }, port=8080) as server, \
-        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
+        MotorWriter(frequency=100, speed=0.6) as motor_writer, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe:
             while True:
                 try:

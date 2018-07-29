@@ -7,7 +7,7 @@ from pipes.resize_pipe import ResizePipe
 
 def main():
     with PiCameraSensor() as cam, \
-        MotorWriter(frequency=3, speed=0.6) as motor_writer, \
+        MotorWriter(frequency=100, speed=0.6) as motor_writer, \
         KerasPipe(filename="./model.h5", verbose=True) as keras_pipe, \
         ResizePipe(size=(64, 48), grayscale=True) as resize_pipe:
             while True:
