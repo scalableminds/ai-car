@@ -74,7 +74,7 @@ class SmartServo(AngularServo):
     def angle(self, value):
         if self.lastChange[1] == value and self.lastChange[0] < time.time() - SmartServo.WAIT_THRESHOLD:
             AngularServo.angle.fset(self, None)
-            print("Skip servo movement", value)
+#            print("Skip servo movement", value)
         else:
             AngularServo.angle.fset(self, value)
             if self.lastChange[1] != value:
