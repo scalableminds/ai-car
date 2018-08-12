@@ -3,7 +3,7 @@ from writers.writer import Writer
 
 
 class MotorWriter(Writer):
-    def __init__(self, frequency=100, speed=1):
+    def __init__(self, frequency=100, speed=0.6):
         self.frequency = frequency
         self.speed = speed
 
